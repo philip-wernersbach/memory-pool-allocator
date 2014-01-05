@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	char *malloc_string = NULL;
 	char *calloc_string = NULL;
 	char *realloc_string = NULL;
-	
+	char *realloc_string_null = NULL;
 	char *hello_world_string = NULL;
 	
 	printf("> Running unit tests.\n");
@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 	strcpy(calloc_string, CALLOC_STRING_LITERAL);
 	OKAY;
 	
-	TEST("pmpa_realloc");
+	TEST("pmpa_realloc [valid pointer] (1/2)");
 	realloc_string = pmpa_malloc(strlen(malloc_string) + 1);
 	strcpy(realloc_string, malloc_string);
 	
@@ -120,6 +120,13 @@ int main(int argc, char* argv[])
 		FAILED;
 	
 	strcat(realloc_string, REALLOC_STRING_ADDITIONAL_LITERAL);
+	OKAY;
+	
+	TEST("pmpa_realloc [NULL pointer] (2/2)");
+	if  ( !(realloc_string_null = pmpa_realloc(NULL, strlen(REALLOC_STRING_LITERAL) + 1)) )
+		FAILED;
+
+	strcat(realloc_string_null, REALLOC_STRING_LITERAL);
 	OKAY;
 	
 	TEST("malloc_string (1/2)");
@@ -155,6 +162,15 @@ int main(int argc, char* argv[])
 	if (strcmp(realloc_string, REALLOC_STRING_LITERAL) != 0)
 		FAILED;
 	OKAY;
+	
+	TEST("realloc_string_null");
+	printf("%s... ", realloc_string_null);
+	
+	if (strcmp(realloc_string_null, REALLOC_STRING_LITERAL) != 0)
+		FAILED;
+	OKAY;
+	
+	pmpa_free(realloc_string);
 	
 	TEST("hello_world_string [malloc] (1/2)");
 	hello_world_string = pmpa_malloc(strlen(HELLO_WORLD_STRING_LITERAL) + 1);

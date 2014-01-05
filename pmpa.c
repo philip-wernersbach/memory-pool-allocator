@@ -134,13 +134,17 @@ void *pmpa_calloc(size_t nelem, size_t elsize)
 
 void *pmpa_realloc(void *ptr, size_t size)
 {
-	pmpa_memory_block *memory_block = ptr - PMPA_MEMORY_BLOCK_HEADER_SIZE;
+	pmpa_memory_block *memory_block = NULL;
 	pmpa_memory_block *new_memory_block = NULL;
 	
-	pmpa_memory_int memory_block_original_size = memory_block->size;
+	pmpa_memory_int memory_block_original_size = 0;
 	
+	/* If ptr is NULL, realloc() behaves like malloc(). */
 	if (!ptr)
 		return pmpa_malloc(size);
+	
+	memory_block = ptr - PMPA_MEMORY_BLOCK_HEADER_SIZE; 
+	memory_block_original_size = memory_block->size;
 	
 	/* Try to cheat by concatenating the current block with contiguous 
 	 * empty blocks after it, and seeing if the new block is big enough. */
