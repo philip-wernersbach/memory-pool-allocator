@@ -9,6 +9,7 @@
 
 #ifndef HAVE_PMPA_INTERNALS_H
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <pmpa.h>
 
@@ -18,7 +19,7 @@ typedef struct {
 	char data;
 } pmpa_memory_block;
 
-#define PMPA_MEMORY_BLOCK_HEADER_SIZE ( sizeof(pmpa_memory_int) + sizeof(bool) )
+#define PMPA_MEMORY_BLOCK_HEADER_SIZE ( offsetof(pmpa_memory_block, data) )
 
 #ifdef PMPA_UNIT_TEST
 #define PMPA_STATIC_UNLESS_TESTING
