@@ -28,7 +28,7 @@ static void concat_sequential_blocks(pmpa_memory_block *memory_block, bool is_al
 		return;
 	
 	while ( (next_memory_block = current_memory_block + current_memory_block->size + PMPA_MEMORY_BLOCK_HEADER_SIZE) && 
-			((next_memory_block + PMPA_MEMORY_BLOCK_HEADER_SIZE) < (master_memory_block + master_memory_block_size)) && 
+			PMPA_POINTER_IS_IN_POOL(next_memory_block + PMPA_MEMORY_BLOCK_HEADER_SIZE) && 
 			(next_memory_block->allocated == is_allocated) )
 				current_memory_block->size += next_memory_block->size + PMPA_MEMORY_BLOCK_HEADER_SIZE;
 	
@@ -39,7 +39,7 @@ static pmpa_memory_block *find_first_block(bool is_allocated, pmpa_memory_int mi
 {
 	pmpa_memory_block *memory_block = master_memory_block;
 	
-	while ( (memory_block + sizeof(pmpa_memory_block)) < (master_memory_block + master_memory_block_size) ) {
+	while (PMPA_POINTER_IS_IN_POOL(memory_block + sizeof(pmpa_memory_block))) {
 		/* If we're trying to find an block, then defragment the pool as we go along.
 		 * This incurs a minor speed penalty, but not having to spend time
 		 * iterating over a fragmented pool makes up for it. */
@@ -66,7 +66,7 @@ static void split_block(pmpa_memory_block *memory_block, pmpa_memory_int size)
 	
 	/* We can't split this block if there's not enough room to create another one. */
 	if ( ( ((second_memory_block + PMPA_MEMORY_BLOCK_HEADER_SIZE) < original_second_memory_block)) &&
-	   ( (second_memory_block + sizeof(pmpa_memory_block)) < (master_memory_block + master_memory_block_size) ) ){
+	   ( PMPA_POINTER_IS_IN_POOL(second_memory_block + sizeof(pmpa_memory_block)) ) ) {
 		memory_block->size = size;
 		
 		second_memory_block->size = original_memory_block_size - (size + PMPA_MEMORY_BLOCK_HEADER_SIZE);
@@ -166,7 +166,8 @@ void *pmpa_realloc(void *ptr, size_t size)
 		memory_block->allocated = true;
 		
 		/* Find another block and try to use that. */
-		new_memory_block = find_first_block(false, size);
+		if ( !(new_memory_block = find_first_block(false, size)) )
+			return NULL;
 			
 		split_block(new_memory_block, size);
 		new_memory_block->allocated = true;

@@ -19,8 +19,6 @@ typedef struct {
 	char data;
 } pmpa_memory_block;
 
-#define PMPA_MEMORY_BLOCK_HEADER_SIZE ( offsetof(pmpa_memory_block, data) )
-
 #ifdef PMPA_UNIT_TEST
 #define PMPA_STATIC_UNLESS_TESTING
 extern PMPA_STATIC_UNLESS_TESTING __thread pmpa_memory_block *master_memory_block;
@@ -28,6 +26,11 @@ extern PMPA_STATIC_UNLESS_TESTING __thread pmpa_memory_int master_memory_block_s
 #else
 #define PMPA_STATIC_UNLESS_TESTING static
 #endif
+
+#define PMPA_MEMORY_BLOCK_HEADER_SIZE ( offsetof(pmpa_memory_block, data) )
+#define PMPA_FIRST_VALID_ADDRESS_IN_POOL master_memory_block
+#define PMPA_LAST_VALID_ADDRESS_IN_POOL (PMPA_FIRST_VALID_ADDRESS_IN_POOL + master_memory_block_size)
+#define PMPA_POINTER_IS_IN_POOL(a) ( ((a) < PMPA_LAST_VALID_ADDRESS_IN_POOL) && ((a) >=  PMPA_FIRST_VALID_ADDRESS_IN_POOL) )
 
 #define HAVE_PMPA_INTERNALS_H
 #endif

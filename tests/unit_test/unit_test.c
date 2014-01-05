@@ -51,7 +51,7 @@ static void walk_memory_pool(pmpa_memory_block *memory_block_test, bool quiet) {
 		printf("\n");
 	}
 	
-	for (int i = 0; (memory_block_test + sizeof(pmpa_memory_block)) < (master_memory_block + master_memory_block_size); i++) {
+	for (int i = 0; PMPA_POINTER_IS_IN_POOL(memory_block_test + sizeof(pmpa_memory_block)); i++) {
 		if (quiet == false) {
 			printf(">>> Memory Block #%d:\n", i);
 			printf(">>>> Size: %llu\n", memory_block_test->size);
