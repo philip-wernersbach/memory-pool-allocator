@@ -139,6 +139,9 @@ void *pmpa_realloc(void *ptr, size_t size)
 	
 	pmpa_memory_int memory_block_original_size = memory_block->size;
 	
+	if (!ptr)
+		return pmpa_malloc(size);
+	
 	/* Try to cheat by concatenating the current block with contiguous 
 	 * empty blocks after it, and seeing if the new block is big enough. */
 	memory_block->allocated = false;
