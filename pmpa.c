@@ -65,7 +65,7 @@ static void split_block(pmpa_memory_block *memory_block, pmpa_memory_int size)
 	memory_block->allocated = false;
 	
 	/* We can't split this block if there's not enough room to create another one. */
-	if ( ( ((second_memory_block + PMPA_MEMORY_BLOCK_HEADER_SIZE) < original_second_memory_block)) &&
+	if ( PMPA_POINTER_IS_IN_RANGE((second_memory_block + PMPA_MEMORY_BLOCK_HEADER_SIZE), 0, original_second_memory_block) &&
 	   ( PMPA_POINTER_IS_IN_POOL(second_memory_block + sizeof(pmpa_memory_block)) ) ) {
 		memory_block->size = size;
 		
