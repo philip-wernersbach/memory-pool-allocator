@@ -24,7 +24,8 @@ How to Use
 
 1. Compile `pmpa.c` into your program.
 2. Include `pmpa.h` in your program.
-3. Use `pmpa_init_thread()` in each thread that will use pmpa, **before** you allocate memory with pmpa.
+3. Define `ARCH_64BIT` or `ARCH_32BIT`, depending on your architecture.
+4. Use `pmpa_init_thread()` in each thread that will use pmpa, **before** you allocate memory with pmpa.
  * Example: If your program is going to allocate a maximum of 64kb of memory, use `pmpa_init_thread(65536)`.
  * The actual allocatable memory will be slightly less than what's specified, due to pmpa using some memory for pool accounting.
 5. Use the `pmpa_*` versions of the C memory allocation functions.
